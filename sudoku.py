@@ -3,6 +3,8 @@ class Board:
         #Initializes an empty board array
         import numpy as np
         self.board = np.zeros((9,9))
+        self.visited = []
+        self.stack = [(8,0),(7,0),(6,0),(5,0),(4,0),(3,0),(2,0),(1,0),(0,0)]
 
     """
     check_rcg inputs:
@@ -58,48 +60,69 @@ class Board:
         return True
 
     """
-    verify_board inputs:
+    get_next_zero inputs:
     self - referring to the board object
+    r - a row index
+    c - a column index 
 
-    verify_board outputs:
-    False - board is not solved (there are still 0s in the board or a value was placed incorrectly)
-    True - board is solved (no longer need to check for solutions)
+    get_next_zero outputs:
+    False - there are no more 0s found in the board
+    (i,j) - the index of the next 0 found in the board
     """
-    def verify_board(self):
-        #Checks if the board is complete solved or not
-
-        #Checks if there are still 0s in the board
+    def get_next_zero(self,r,c):
+        #Returns the next zero found within the board if any
+        if c >= 8 and r >= 8:
+            r = 0
+            c = 0
+        elif c >= 9:
+            c = 0
+            r += 1
+        elif c>=8 and r <= 8:
+            c = 0
         for i in range(9):
             for j in range(9):
-                if self.board[i,j] == 0:
-                    return (False,i,j)
+                if self.board[i,j] == 0 and j >= c and i >= r:
+                    return (i,j)
+        return False
 
-        #Verifies each number in solution
-        for i in range(9):
-            for j in range(9):
-                if not self.check_rcg(i,j,self.board[i,j]):
-                    return False
-        return True
-    
     """
-    solve inputs:
-    self - referring to the board object
+    dfs inputs:
+    self - referring to the board object 
 
-    solve outputs:
-    False - board is not complete (still need to recursively verify solutions)
-    True - board is complete (no longer need to recursively verify solutions)
+    dfs outputs:
+    False - the potential solution did not work - must go back and try again
+    True - the potential solution did work. If board complete end search, if not search next
     """
-    def solve(self):
-        #Solves entire puzzle
-        a = self.verify_board()
-        if not self.verify_board():
+    def dfs(self):
+        #Depth first seach algorithm adapted to solve sudoku puzzle
+        if len(self.stack) > 0:
+            if self.stack[len(self.stack)-1] == False:
+                self.stack.pop()
+            (r,c) = self.stack.pop()
+        if not self.get_next_zero(r,c):
             return True
-        for n in range(1,10):
-            if self.check_rcg(a[1],a[2],n):
-                self.board[a[1],a[2]] = n
-                if self.solve():
-                    return True
-                self.board[a[1],a[2]] = 0
+        for i in range(9):
+            for j in range(9):
+                if self.board[i,j] == 0 and i>=r and j>=c:
+                    self.visited.append((i,j))
+                    next = self.get_next_zero(i,j+1)
+                    if next:
+                        self.stack.append((next[0],next[1]))
+                    for n in range(1,10):
+                        if self.check_rcg(i,j,n):
+                            self.board[i,j] = n
+                            if self.dfs():
+                                return True
+                            self.visited.append((r,c))
+                            self.stack.pop()
+                            self.stack.append(next)
+                    self.visited.pop()
+                    if len(self.stack) > 0:
+                        self.stack.pop()
+                    (r,c) = self.visited.pop()
+                    self.board[(r,c)] = 0
+                    self.stack.append((r,c))
+                    return False
         return False
 
     """
@@ -151,7 +174,7 @@ class Board:
         self.set_board(dict)
         print("unsolved board:")
         self.print_user_friendly_board()
-        self.solve()
+        self.dfs()
         print("solved board:")
         self.print_user_friendly_board()
 
@@ -171,4 +194,4 @@ problem3 = {(0,1):2,(0,3):5,(1,3):6,(1,4):2,(1,8):9,(2,4):9,(2,5):8,(2,6):5,
             (8,1):8,(8,3):9,(8,4):7,(8,5):4}
 
 b = Board()
-b.solve_board(problem3)
+b.solve_board(problem1)
