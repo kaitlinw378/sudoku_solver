@@ -77,12 +77,30 @@ class Board:
         for key, value in dict.items():
             self.board[key] = value
 
+    def print_user_friendly_board(self):
+        #Prints a version of the board that is easy for users to see
+        line = "----------------------------------"
+        print(line)
+        rc = 1
+        for i in range(9):
+            v1 = str(self.board[i,0:3]).strip("[").strip("]")
+            v2 = str(self.board[i,3:6]).strip("[").strip("]")
+            v3 = str(self.board[i,6:9]).strip("[").strip("]")
+            s = "| " + v1 + " | " + v2 + " | " + v3 + " | "
+            print(s)
+            if rc == 3:
+                print(line)
+                rc = 0
+            rc += 1
+
     def solve_board(self,dict):
         #Creates sudoku board using an unzolved puzzle input and calls solve function
         self.set_board(dict)
-        print(self.board)
+        print("unsolved board:")
+        self.print_user_friendly_board()
         self.solve()
-        print(self.board)
+        print("solved board:")
+        self.print_user_friendly_board()
 
 problem1 = {(0,2):3,(0,4):2,(0,6):6,(1,0):9,(1,3):3,(1,5):5,(1,8):1,(2,2):1,
             (2,3):8,(2,5):6,(2,6):4,(3,2):8,(3,3):1,(3,5):2,(3,6):9,(4,0):7,
@@ -100,4 +118,4 @@ problem3 = {(0,1):2,(0,3):5,(1,3):6,(1,4):2,(1,8):9,(2,4):9,(2,5):8,(2,6):5,
             (8,1):8,(8,3):9,(8,4):7,(8,5):4}
 
 b = Board()
-b.solve_board(problem3)
+b.solve_board(problem1)
