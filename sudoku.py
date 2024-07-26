@@ -1,19 +1,23 @@
 class Board:
     def __init__(self):
+        #Initializes an empty board array
         import numpy as np
-        # self.num_count = {1:5,2:2,3:4,4:6,5:3,6:3,7:4,8:6,9:5}
         self.board = np.zeros((9,9))
 
     def check_rcg(self,r,c,v):
-        # o = self.board[r,c]
+        #Checks if a given value (v) is in a row,col and 3x3 grid
+
+        #Check if v is in row (r)
         for i in range(9):
             if self.board[r,i] == v:
                 return False
 
+        #Check if v is in col (c)
         for i in range(9):
             if self.board[i,c] == v:
                 return False
         
+        #r1,r2,r3 are the three rows found within a 3x3 grid
         r1 = []
         r2 = []
         r3 = []
@@ -36,12 +40,14 @@ class Board:
             r1 = self.board[rc,c//3+4:c//3+7]
             r2 = self.board[rc+1,c//3+4:c//3+7]
             r3 = self.board[rc+2,c//3+4:c//3+7]
+        #Check if v is in the 3x3 grid
         if v in r1 or v in r2 or v in r3:
             return False
         
         return True
 
     def verify_board(self):
+        #Checks if the board is complete solved or not
         for i in range(9):
             for j in range(9):
                 if self.board[i,j] == 0:
@@ -54,6 +60,7 @@ class Board:
         return False
     
     def solve(self):
+        #Solves entire puzzle
         a = self.verify_board()
         if not self.verify_board():
             return True
@@ -66,10 +73,12 @@ class Board:
         return False
 
     def set_board(self,dict):
+        #Takes an input dictionary and initializes the board
         for key, value in dict.items():
             self.board[key] = value
 
     def solve_board(self,dict):
+        #Creates sudoku board using an unzolved puzzle input and calls solve function
         self.set_board(dict)
         print(self.board)
         self.solve()
@@ -91,4 +100,4 @@ problem3 = {(0,1):2,(0,3):5,(1,3):6,(1,4):2,(1,8):9,(2,4):9,(2,5):8,(2,6):5,
             (8,1):8,(8,3):9,(8,4):7,(8,5):4}
 
 b = Board()
-b.solve_board(problem3)    
+b.solve_board(problem3)
