@@ -4,6 +4,17 @@ class Board:
         import numpy as np
         self.board = np.zeros((9,9))
 
+    """
+    check_rcg inputs:
+    self - referring to the board object
+    v - a value that needs to be checked
+    r - a row index
+    c - a column index 
+
+    check_rcg outputs:
+    False - the value was found within the given row,col or corr 3x3 grid
+    True - the value was not found in the given row,col or corr 3x3 grid
+    """
     def check_rcg(self,r,c,v):
         #Checks if a given value (v) is in a row,col and 3x3 grid
 
@@ -46,19 +57,38 @@ class Board:
         
         return True
 
+    """
+    verify_board inputs:
+    self - referring to the board object
+
+    verify_board outputs:
+    False - board is not solved (there are still 0s in the board or a value was placed incorrectly)
+    True - board is solved (no longer need to check for solutions)
+    """
     def verify_board(self):
         #Checks if the board is complete solved or not
+
+        #Checks if there are still 0s in the board
         for i in range(9):
             for j in range(9):
                 if self.board[i,j] == 0:
-                    return (True,i,j)
+                    return (False,i,j)
 
+        #Verifies each number in solution
         for i in range(9):
             for j in range(9):
                 if not self.check_rcg(i,j,self.board[i,j]):
                     return False
-        return False
+        return True
     
+    """
+    solve inputs:
+    self - referring to the board object
+
+    solve outputs:
+    False - board is not complete (still need to recursively verify solutions)
+    True - board is complete (no longer need to recursively verify solutions)
+    """
     def solve(self):
         #Solves entire puzzle
         a = self.verify_board()
@@ -72,11 +102,26 @@ class Board:
                 self.board[a[1],a[2]] = 0
         return False
 
+    """
+    set_board inputs:
+    self - referring to the board object
+    dict - a dictionary containing initialization values for a new puzzle
+
+    set_board outputs:
+    none - set_board fills the board with the initial values and returns nothing
+    """
     def set_board(self,dict):
         #Takes an input dictionary and initializes the board
         for key, value in dict.items():
             self.board[key] = value
 
+    """
+    print_user_friendly_boardinputs:
+    self - referring to the board object
+
+    print_user_friendly_board outputs:
+    none - function prints the board in a way that is easy for user to visualize
+    """
     def print_user_friendly_board(self):
         #Prints a version of the board that is easy for users to see
         line = "----------------------------------"
@@ -93,6 +138,14 @@ class Board:
                 rc = 0
             rc += 1
 
+    """
+    solve_board inputs:
+    self - referring to the board object
+    dict - a dictionary containing initialization values for a new puzzle
+
+    solve_board outputs:
+    none - function calls initialization function, solve function, and prints the unsolved & solved board
+    """
     def solve_board(self,dict):
         #Creates sudoku board using an unzolved puzzle input and calls solve function
         self.set_board(dict)
@@ -118,4 +171,4 @@ problem3 = {(0,1):2,(0,3):5,(1,3):6,(1,4):2,(1,8):9,(2,4):9,(2,5):8,(2,6):5,
             (8,1):8,(8,3):9,(8,4):7,(8,5):4}
 
 b = Board()
-b.solve_board(problem1)
+b.solve_board(problem3)
